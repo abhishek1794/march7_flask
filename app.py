@@ -5,31 +5,37 @@ import sqlite3
 import pandas as pd
 import pickle
 
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+
 import warnings
 warnings.filterwarnings("ignore")
 
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///customer.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///student.db'
 db = SQLAlchemy(app)
 
-class customers(db.Model):
-    ID = db.Column(db.Integer, primary_key=True)
-    Name = db.Column(db.String(200), nullable=False)
-    Age = db.Column(db.Integer)
+class students(db.Model):
+    class_no = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), nullable=False)
+    gender = db.Column(db.Integer)
+    age = db.Column(db.Integer)
+    marks = db.Column(db.Integer)
 
     def __repr__(self):
-        return '<Task %r>' % self.ID
+        return '<Task %r>' % self.class_no
 
 result = {}
 
-def get_by_Name(Name):
-    conn = sqlite3.connect('customer.db')
+def get_by_class(class_no):
+    conn = sqlite3.connect('student.db')
     cur = conn.cursor()
-    statement = "SELECT * FROM customers WHERE Name = ?"
-    cur.execute(statement, [Name])
-    cust_details = cur.fetchall()
-    return cust_details
+    statement = "SELECT * FROM student_marks WHERE class_no = ?"
+    cur.execute(statement, [class_no])
+    student_details = cur.fetchall()
+    return student_details
 
 def predict(body):
     # body = body.split(",")
@@ -45,31 +51,51 @@ def predict(body):
 
 @app.route("/")
 def index():
-    tasks = customers.query.limit(5).all()
-    return render_template('index.html', tasks=tasks)
+    # tasks = customers.query.limit(5).all()
+    return render_template('index.html')
 
-@app.route("/Name", methods = ["GET"])
-def get_cust():
+@app.route("/class_no", methods = ["GET"])
+def get_student():
     global sent_global
-    body = request.args.get('Name')
-    sent = get_by_Name(body)
-    sent_global = get_by_Name(body)
+    body = request.args.get('class_no')
+    sent = get_by_class(body)
+    # print(sent)
+    sent_global = get_by_class(body)
     sent_global = [list(l) for l in sent_global]
-    print(sent_global)
+    # print(sent_global)
     return render_template('update.html', sent=sent)
     
 
-@app.route("/Predict", methods = ["GET"])
-def age_predict():
-    body = request.args.get('Predict')
-    df = pd.DataFrame(sent_global)
-    df = pd.get_dummies(df)
-    
-    df['new'] = 0  # have to remove it
-    print(df)
+@app.route("/predict", methods = ["GET"])
+def marks_predict():
+    global df1_global
+    body = request.args.get('predict')
+    df = pd.DataFrame(sent_global, columns = ['class_no', 'name', 'gender','age','marks'])
+    # print(df)
+    df1 = pd.DataFrame(sent_global, columns = ['class_no', 'name', 'gender','age','marks'])
+    df = df.drop('name', axis=1)
+    df = df.drop('marks', axis=1)
+    df1 = df1.drop('marks', axis=1)
+
     sent_predict = predict(df)
-    print(sent_predict)
-    return render_template('update.html', sent_predict=sent_predict)
+    print("-s-s-s-s-s-s-s-s-sw-ws-s-")
+    sent_predict =  list(sent_predict)
+    df1['marks'] = sent_predict
+
+    df1_global = df1
+
+    return render_template('predict.html',  tables=[df1.to_html(classes='data')], titles=df1.columns.values)
+
+@app.route("/visualize", methods = ["GET"])
+def marks_visualization():
+    body = request.args.get('visualize')
+    
+    df1_global['total'] = 100
+    df1_global.drop(columns = ['class_no', 'name', 'age', 'gender'], inplace = True)
+    print(df1_global)
+    # for ind in df1_global.index:
+    #     return render_template('visualize.html', fig=df1_global.iloc[ind].plot(kind='pie'))
+
 
 if __name__ == "__main__":
     app.run(host='127.0.0.13', port=8080, debug=True)

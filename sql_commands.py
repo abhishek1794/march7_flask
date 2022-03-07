@@ -1,11 +1,11 @@
 import sqlite3
 
-# Connect to database
-# conn = sqlite3.connect(':memory:')
-conn = sqlite3.connect('customer.db')
+# # Connect to database
+# # conn = sqlite3.connect(':memory:')
+# conn = sqlite3.connect('customer.db')
 
-# Create a cursor
-c = conn.cursor()
+# # Create a cursor
+# c = conn.cursor()
 
 # # Create a Table
 # c.execute("""CREATE TABLE customers (
@@ -15,15 +15,15 @@ c = conn.cursor()
 
 # c.execute("INSERT INTO customers VALUES(1, 'Abhishek', 28)")
 # c.execute("INSERT INTO customers VALUES(2, 'Nithin', 27)")
-c.execute("INSERT INTO customers VALUES(4, 'Amit', 21)")
+# c.execute("INSERT INTO customers VALUES(4, 'Amit', 21)")
 # print("Command executed successfully")
 
 
-# Commit the copmmand
-conn.commit()
+# # Commit the copmmand
+# conn.commit()
 
-# # Close our Connection
-conn.close()
+# # # Close our Connection
+# conn.close()
 
 # # Many execution
 # many_customers = [
@@ -40,9 +40,9 @@ conn.close()
 # #c.fetchmany(3)
 # print(c.fetchall())
 
-# import pandas as pd
-# df = pd.read_csv('students.csv')
-# print(df.head())
-# conn = sqlite3.connect('student.db')
-# df.to_sql('students_table', conn, if_exists='replace', index=False)
-# print('successful')
+import pandas as pd
+df = pd.read_csv('student_marks.csv')
+print(df.head())
+conn = sqlite3.connect('student.db')
+df.to_sql('student_marks', conn, if_exists='replace', index=False)
+print('successful')

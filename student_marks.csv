@@ -1,0 +1,16 @@
+class_no,name,gender,age,marks
+1,ram,1,12,80
+1,shyam ,1,14,45
+1,ram,1,15,65
+1,pooja,0,12,90
+1,deepika,0,28,95
+1,mohan,1,26,75
+2,sita ,0,19,95
+2,gita,0,17,10
+2,perter,1,22,15
+2,john,1,56,78
+3,ram,1,52,63
+3,alex,1,12,56
+3,anna,0,45,45
+3,tony,1,78,89
+3,alex,0,23,87
